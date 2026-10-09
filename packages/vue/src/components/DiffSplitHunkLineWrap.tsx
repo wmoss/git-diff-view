@@ -16,7 +16,8 @@ import { ExpandAll, ExpandDown, ExpandUp } from "./DiffExpand";
 
 const DiffSplitHunkLineGitHub = defineComponent(
   (props: { index: number; diffFile: DiffFile; lineNumber: number }) => {
-    const currentHunk = computed(() => props.diffFile.getSplitHunkLine(props.index));
+    // the hunk map is re-keyed on expand, so the lookup must be refreshed on every diffFile update
+    const currentHunk = ref(props.diffFile.getSplitHunkLine(props.index));
 
     const enableExpand = computed(() => props.diffFile.getExpandEnabled());
 
@@ -43,6 +44,8 @@ const DiffSplitHunkLineGitHub = defineComponent(
     );
 
     useSubscribeDiffFile(props, () => {
+      currentHunk.value = props.diffFile.getSplitHunkLine(props.index);
+
       currentShowExpandAll.value =
         currentHunk.value &&
         currentHunk.value.splitInfo &&
@@ -141,7 +144,8 @@ const DiffSplitHunkLineGitHub = defineComponent(
 
 const DiffSplitHunkLineGitLab = defineComponent(
   (props: { index: number; diffFile: DiffFile; lineNumber: number }) => {
-    const currentHunk = computed(() => props.diffFile.getSplitHunkLine(props.index));
+    // the hunk map is re-keyed on expand, so the lookup must be refreshed on every diffFile update
+    const currentHunk = ref(props.diffFile.getSplitHunkLine(props.index));
 
     const enableExpand = computed(() => props.diffFile.getExpandEnabled());
 
@@ -168,6 +172,8 @@ const DiffSplitHunkLineGitLab = defineComponent(
     const currentIsLastLine = computed(() => currentHunk.value && currentHunk.value.isLast);
 
     useSubscribeDiffFile(props, () => {
+      currentHunk.value = props.diffFile.getSplitHunkLine(props.index);
+
       currentShowExpandAll.value =
         currentHunk.value &&
         currentHunk.value.splitInfo &&

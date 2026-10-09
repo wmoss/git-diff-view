@@ -17,7 +17,8 @@ import type { DiffFile } from "@git-diff-view/core";
 
 export const DiffUnifiedHunkLine = defineComponent(
   (props: { index: number; diffFile: DiffFile; lineNumber: number }) => {
-    const currentHunk = computed(() => props.diffFile.getUnifiedHunkLine(props.index));
+    // the hunk map is re-keyed on expand, so the lookup must be refreshed on every diffFile update
+    const currentHunk = ref(props.diffFile.getUnifiedHunkLine(props.index));
 
     const enableExpand = computed(() => props.diffFile.getExpandEnabled());
 
@@ -46,6 +47,8 @@ export const DiffUnifiedHunkLine = defineComponent(
     );
 
     useSubscribeDiffFile(props, () => {
+      currentHunk.value = props.diffFile.getUnifiedHunkLine(props.index);
+
       currentIsShow.value =
         currentHunk.value &&
         currentHunk.value.unifiedInfo &&
